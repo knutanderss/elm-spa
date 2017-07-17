@@ -1,8 +1,9 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Events exposing (onClick, onInput)
-import Html.Attributes exposing (placeholder)
+import Page.Page exposing (frame)
+import Page.Home exposing (view)
+import Page.About exposing (view)
 
 
 main : Program Never Model Msg
@@ -19,14 +20,18 @@ main =
 -- MODEL
 
 
+type Page
+    = Home
+    | About
+
+
 type alias Model =
-    { someString : String
-    }
+    { page : Page }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model "Initial string", Cmd.none )
+    ( Model Home, Cmd.none )
 
 
 
@@ -34,14 +39,14 @@ init =
 
 
 type Msg
-    = ChangeString String
+    = SetPage Page
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ChangeString newString ->
-            ( { model | someString = newString }, Cmd.none )
+        SetPage page ->
+            ( { model | page = page }, Cmd.none )
 
 
 
@@ -59,11 +64,9 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ p [] [ text model.someString ]
-        , input
-            [ onInput ChangeString
-            , placeholder "Type something here!"
-            ]
-            []
-        ]
+    case model.page of
+        Home ->
+            frame Page.Home.view
+
+        About ->
+            frame Page.About.view
