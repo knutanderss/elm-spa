@@ -2,41 +2,38 @@ module Page.Page exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Route exposing (Route)
 
 
-viewHeader : Html msg
-viewHeader =
-    nav [ class "navbar navbar-default navbar-static-top" ]
-        [ div
-            [ class "container" ]
+viewHeader : Route -> Html msg
+viewHeader route =
+    let
+        activeClass : Route -> List (Html.Attribute msg)
+        activeClass r =
+            if route == r then
+                [ class "active" ]
+            else
+                []
+    in
+        nav [ class "navbar navbar-default navbar-static-top" ]
             [ div
-                [ class "navbar-header" ]
-                [ button
-                    [ type_ "undefined", class "navbar-toggle collapsed" ]
-                    [ span [ class "sr-only" ] [ text "Toggle navigation" ]
-                    , span [ class "icon-bar" ] []
-                    , span [ class "icon-bar" ] []
-                    , span [ class "icon-bar" ] []
-                    ]
-                , a
-                    [ class "navbar-brand", href "#" ]
-                    [ text "Project name" ]
-                ]
-            , div [ id "navbar", class "navbar-collapse collapse" ]
-                [ ul [ class "nav navbar-nav" ]
-                    [ li
-                        [ class "active" ]
-                        [ a [ href "#" ] [ text "Home" ] ]
-                    , li []
-                        [ a [ href "#about" ] [ text "About" ]
+                [ class "container" ]
+                [ div [ id "navbar", class "navbar-collapse collapse" ]
+                    [ ul [ class "nav navbar-nav" ]
+                        [ li
+                            (activeClass Route.Home)
+                            [ a [ href "#" ] [ text "Home" ] ]
+                        , li
+                            (activeClass Route.About)
+                            [ a [ href "#about" ] [ text "About" ]
+                            ]
                         ]
+                    , ul
+                        [ class "nav navbar-nav navbar-right" ]
+                        []
                     ]
-                , ul
-                    [ class "nav navbar-nav navbar-right" ]
-                    []
                 ]
             ]
-        ]
 
 
 viewFooter : Html msg
@@ -44,10 +41,10 @@ viewFooter =
     footer [ class "bd-footer text-muted" ] []
 
 
-frame : Html msg -> Html msg
-frame content =
+frame : Route -> Html msg -> Html msg
+frame route content =
     div []
-        [ viewHeader
+        [ viewHeader route
         , content
         , viewFooter
         ]

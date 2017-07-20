@@ -12,6 +12,7 @@ import UrlParser as Url exposing ((</>), Parser, oneOf, parseHash, s, string)
 type Route
     = Home
     | About
+    | NotFound
 
 
 route : Parser (Route -> a) a
@@ -36,6 +37,9 @@ routeToString page =
 
                 About ->
                     [ "about" ]
+
+                NotFound ->
+                    [ "404" ]
     in
         "#/" ++ String.join "/" pieces
 

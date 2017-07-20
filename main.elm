@@ -2,36 +2,24 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Page.Page exposing (frame)
-import Page.Home exposing (view)
-import Page.About exposing (view)
-
-
-main : Program Never Model Msg
-main =
-    Html.program
-        { init = init
-        , view = view
-        , update = update
-        , subscriptions = subscriptions
-        }
-
+import Page.Home
+import Page.About
+import Page.NotFound
+import Navigation exposing (program)
+import Route exposing (Route)
 
 
 -- MODEL
 
 
-type Page
-    = Home
-    | About
-
-
 type alias Model =
-    { page : Page }
+    { page : Route
+    }
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( Model Home, Cmd.none )
+init : Navigation.Location -> ( Model, Cmd Msg )
+init loc =
+    ( Model Route.Home, Cmd.none )
 
 
 
@@ -39,14 +27,38 @@ init =
 
 
 type Msg
-    = SetPage Page
+    = SetRoute (Maybe Route)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        SetPage page ->
-            ( { model | page = page }, Cmd.none )
+        SetRoute Nothing ->
+            ( { model | page = Route.NotFound }, Cmd.none )
+
+        SetRoute (Just x) ->
+            ( { model | page = x }, Cmd.none )
+
+
+
+-- VIEW
+
+
+view : Model -> Html Msg
+view model =
+    let
+        frame =
+            Page.Page.frame model.page
+    in
+        case model.page of
+            Route.Home ->
+                frame Page.Home.view
+
+            Route.About ->
+                frame Page.About.view
+
+            Route.NotFound ->
+                frame Page.NotFound.view
 
 
 
@@ -59,14 +71,15 @@ subscriptions model =
 
 
 
--- VIEW
+-- MAIN
 
 
-view : Model -> Html Msg
-view model =
-    case model.page of
-        Home ->
-            frame Page.Home.view
-
-        About ->
-            frame Page.About.view
+main : Program Never Model Msg
+main =
+    Navigation.program
+        (Route.fromLocation >> SetRoute)
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
