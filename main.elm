@@ -18,8 +18,17 @@ type alias Model =
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
-init loc =
-    ( Model Route.Home, Cmd.none )
+init initialLocation =
+    ( Model
+        (case Route.fromLocation initialLocation of
+            Just r ->
+                r
+
+            Nothing ->
+                Route.NotFound
+        )
+    , Cmd.none
+    )
 
 
 
